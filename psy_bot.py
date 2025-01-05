@@ -1,3 +1,4 @@
+import time
 from langchain_community.llms import CTransformers
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -20,42 +21,45 @@ def load_llm(model_file):
 
 # Tao prompt template
 def creat_prompt(template):
-    prompt = PromptTemplate(template = template, input_variables=["context", "question"])
+    prompt = PromptTemplate(template=template, input_variables=["context", "question"])
     return prompt
-
 
 # Tao simple chain
 def create_qa_chain(prompt, llm, db):
     llm_chain = RetrievalQA.from_chain_type(
-        llm = llm,
-        chain_type= "stuff",
-        retriever = db.as_retriever(search_kwargs = {"k":2}, max_tokens_limit=256),
-        return_source_documents = False,
-        chain_type_kwargs= {'prompt': prompt}
-
+        llm=llm,
+        chain_type="stuff",
+        retriever=db.as_retriever(search_kwargs={"k": 2}, max_tokens_limit=256),
+        return_source_documents=False,
+        chain_type_kwargs={'prompt': prompt}
     )
     return llm_chain
 
 # Read tu VectorDB
 def read_vectors_db():
-    # Embeding
+    # Embedding
     embedding_model = GPT4AllEmbeddings(model_file="pre_models/all-MiniLM-L6-v2-f16.gguf")
     db = FAISS.load_local(vector_db_path, embedding_model, allow_dangerous_deserialization=True)
     return db
-
 
 # Bat dau thu nghiem
 db = read_vectors_db()
 llm = load_llm(model_file)
 
-#Tao Prompt
+# Tao Prompt
 template = """<|im_start|>system\nSử dụng thông tin sau đây để trả lời câu hỏi. Nếu bạn không biết câu trả lời, hãy nói không biết, đừng cố tạo ra câu trả lời\n
     {context}<|im_end|>\n<|im_start|>user\n{question}<|im_end|>\n<|im_start|>assistant"""
 prompt = creat_prompt(template)
 
-llm_chain  =create_qa_chain(prompt, llm, db)
+llm_chain = create_qa_chain(prompt, llm, db)
 
-# Chay cai chain
-question = "SHB miễn phí mở tài khoản giá bao nhiêu/"
+# Chay chain và đo thời gian
+question = "SHB miễn phí mở tài khoản giá bao nhiêu?"
+start_time = time.time()  # Ghi nhận thời điểm bắt đầu
 response = llm_chain.invoke({"query": question})
-print(response)
+end_time = time.time()  # Ghi nhận thời điểm kết thúc
+
+# Tính thời gian
+elapsed_time = end_time - start_time
+print(f"Câu trả lời: {response}")
+print(f"Thời gian sinh ra câu trả lời: {elapsed_time:.2f} giây")
