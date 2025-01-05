@@ -29,7 +29,7 @@ def create_db_from_text():
     chunks = text_splitter.split_text(raw_text)
 
     # Embeding
-    embedding_model = GPT4AllEmbeddings(model_file = "models/all-MiniLM-L6-v2-f16.gguf")
+    embedding_model = GPT4AllEmbeddings(model_file = "pre_models/all-MiniLM-L6-v2-f16.gguf")
 
     # Dua vao Faiss Vector DB
     db = FAISS.from_texts(texts=chunks, embedding=embedding_model)
@@ -46,10 +46,10 @@ def create_db_from_files():
     chunks = text_splitter.split_documents(documents)
 
     # Embeding
-    embedding_model = GPT4AllEmbeddings(model_file="models/all-MiniLM-L6-v2-f16.gguf")
+    embedding_model = GPT4AllEmbeddings(model_file="pre_models/all-MiniLM-L6-v2-f16.gguf")
     db = FAISS.from_documents(chunks, embedding_model)
     db.save_local(vector_db_path)
     return db
 
 
-create_db_from_files()
+create_db_from_text()

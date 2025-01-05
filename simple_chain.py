@@ -3,7 +3,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 # Cau hinh
-model_file = "models/vinallama-7b-chat_q5_0.gguf"
+model_file = "pre_models/vinallama-2.7b-chat_q5_0.gguf"
 
 
 # Load LLM

@@ -5,7 +5,7 @@ from langchain_community.embeddings import GPT4AllEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # Cau hinh
-model_file = "models/vinallama-7b-chat_q5_0.gguf"
+model_file = "pre_models/vinallama-2.7b-chat_q5_0.gguf"
 vector_db_path = "vectorstores/db_faiss"
 
 # Load LLM
@@ -13,7 +13,7 @@ def load_llm(model_file):
     llm = CTransformers(
         model=model_file,
         model_type="llama",
-        max_new_tokens=1024,
+        max_new_tokens=256,
         temperature=0.01
     )
     return llm
@@ -29,7 +29,7 @@ def create_qa_chain(prompt, llm, db):
     llm_chain = RetrievalQA.from_chain_type(
         llm = llm,
         chain_type= "stuff",
-        retriever = db.as_retriever(search_kwargs = {"k":3}, max_tokens_limit=1024),
+        retriever = db.as_retriever(search_kwargs = {"k":2}, max_tokens_limit=256),
         return_source_documents = False,
         chain_type_kwargs= {'prompt': prompt}
 
@@ -39,8 +39,8 @@ def create_qa_chain(prompt, llm, db):
 # Read tu VectorDB
 def read_vectors_db():
     # Embeding
-    embedding_model = GPT4AllEmbeddings(model_file="models/all-MiniLM-L6-v2-f16.gguf")
-    db = FAISS.load_local(vector_db_path, embedding_model)
+    embedding_model = GPT4AllEmbeddings(model_file="pre_models/all-MiniLM-L6-v2-f16.gguf")
+    db = FAISS.load_local(vector_db_path, embedding_model, allow_dangerous_deserialization=True)
     return db
 
 
@@ -56,6 +56,6 @@ prompt = creat_prompt(template)
 llm_chain  =create_qa_chain(prompt, llm, db)
 
 # Chay cai chain
-question = "Ngày 18/12, SHB đã làm gì?"
+question = "SHB miễn phí mở tài khoản giá bao nhiêu/"
 response = llm_chain.invoke({"query": question})
 print(response)
