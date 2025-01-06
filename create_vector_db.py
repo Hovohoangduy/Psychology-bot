@@ -52,4 +52,4 @@ def create_db_from_files():
     return db
 
 
-create_db_from_text()
+create_db_from_files()

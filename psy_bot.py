@@ -54,7 +54,7 @@ prompt = creat_prompt(template)
 llm_chain = create_qa_chain(prompt, llm, db)
 
 # Chay chain và đo thời gian
-question = "SHB miễn phí mở tài khoản giá bao nhiêu?"
+question = "Dấu hiệu và triệu chứng sang chấn thường gặp ở người trưởng thành,trẻ em và nhóm yếu thế sau dịch COVID-19?"
 start_time = time.time()  # Ghi nhận thời điểm bắt đầu
 response = llm_chain.invoke({"query": question})
 end_time = time.time()  # Ghi nhận thời điểm kết thúc
